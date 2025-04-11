@@ -21,10 +21,6 @@ class m250411_120839_create_schedules_table extends Migration
             'id_teacher' => $this->integer()->null(),
         ]);
 
-//        $this->createIndex('idx-schedules-class', '{{%schedules}}', 'id_class');
-//        $this->createIndex('idx-schedules-subject', '{{%schedules}}', 'id_subject');
-//        $this->createIndex('idx-schedules-teacher', '{{%schedules}}', 'id_teacher');
-
         $this->addForeignKey(
             'fk-schedule-day',
             '{{%schedules}}', 'id_day',
