@@ -41,17 +41,15 @@ class ScheduleGeneratorController extends Controller
 
         $header = sprintf("%-5s %-10s %-15s %-20s %-15s %-20s", 'ID', 'Day', 'Bell', 'Class', 'Subject', 'Teacher');
         echo $header . "\n";
-        echo str_repeat("-", strlen($header)) . "\n"; // Underline header
+        echo str_repeat("-", strlen($header)) . "\n";
 
-        // Loop through schedules and print each
         foreach ($schedules as $schedule) {
-            $day = $schedule->day->name; // Assuming 'name' is the property of 'day' model
-            $bell = $schedule->bell->name; // Assuming 'time' is the property of 'bell' model
-            $class = $schedule->class->name; // Assuming 'name' is the property of 'class' model
-            $subject = $schedule->subject->name; // Assuming 'name' is the property of 'subject' model
-            $teacher = $schedule->teacher->name; // Assuming 'name' is the property of 'teacher' model
+            $day = $schedule->day->name;
+            $bell = $schedule->bell->name;
+            $class = $schedule->class->name;
+            $subject = $schedule->subject->name;
+            $teacher = $schedule->teacher->name;
 
-            // Print schedule details in a formatted way
             echo sprintf("%-5s %-10s %-15s %-20s %-15s %-20s\n",
                 $schedule->id_schedule, $day, $bell, $class, $subject, $teacher);
         }
