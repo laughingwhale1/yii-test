@@ -13,3 +13,4 @@ To start up:
 7. Before test, run: _php tests/bin/yii migrate_
 8. Then run test: _vendor/bin/codecept run functional SeedControllerCest_
 
+9. To illustrate the result: run: _php yii schedule-generator/draw_

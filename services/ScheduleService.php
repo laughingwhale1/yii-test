@@ -75,7 +75,6 @@ class ScheduleService
                         $schedule->id_teacher = $availableTeacher;
                         $schedule->save();
 
-                        return;
                     }
                 }
             }
