@@ -29,6 +29,11 @@ $config = [
         'db' => $db,
     ],
     'params' => $params,
+    'container' => [
+        'definitions' => [
+            \app\services\ScheduleService::class => \app\services\ScheduleService::class,
+        ],
+    ],
     /*
     'controllerMap' => [
         'fixture' => [ // Fixture generation command line.
