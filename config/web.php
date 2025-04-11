@@ -52,11 +52,6 @@ $config = [
         */
     ],
     'params' => $params,
-    'container' => [
-        'definitions' => [
-            \services\ScheduleService::class => \services\ScheduleService::class,
-        ],
-    ],
 ];
 
 if (YII_ENV_DEV) {
