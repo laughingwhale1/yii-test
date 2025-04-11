@@ -9,3 +9,7 @@ To start up:
 
 5. Seed database: _php yii seed/basic_ 
 6. Generate schedule: _php yii schedule-generator/generate_
+
+7. Before test, run: _php tests/bin/yii migrate_
+8. Then run test: _vendor/bin/codecept run functional SeedControllerCest_
+
