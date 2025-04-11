@@ -8,8 +8,6 @@ services:
       - ./:/app:delegated
     ports:
       - '8000:80'
-    depends_on:
-      - mysql
   mysql:
     image: mysql:8
     environment:
@@ -19,9 +17,3 @@ services:
       MYSQL_PASSWORD: PASSWORD
     ports:
       - "3306:3306"
-    networks:
-      - app-network
-
-networks:
-  app-network:
-    driver: bridge
