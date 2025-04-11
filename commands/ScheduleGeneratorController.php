@@ -21,6 +21,4 @@ class ScheduleGeneratorController extends Controller
 
         echo "Schedule generated successfully!\n";
     }
-
-
 }

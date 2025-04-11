@@ -14,6 +14,10 @@ use yii\db\Exception;
 
 class SeedController extends Controller
 {
+    public function __construct($id, $module, $config = [])
+    {
+        parent::__construct($id, $module, $config);
+    }
 
     const CLASSES = [
         '1-A',
@@ -170,7 +174,7 @@ class SeedController extends Controller
             $this->actionTeacherSubject();
             $this->actionClassSubject();
         } catch (\Throwable $throwable) {
-
+            \Yii::error($throwable->getMessage());
         }
     }
 }

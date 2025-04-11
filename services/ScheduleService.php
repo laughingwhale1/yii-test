@@ -19,7 +19,6 @@ class ScheduleService
 
         Schedules::deleteAll();
 
-        // iterating classes
         foreach ($classes as $class) {
             // getting class subjects
             $classSubjects = ClassSubjects::find()
@@ -44,43 +43,48 @@ class ScheduleService
             ->column();
 
         if (empty($teachers)) {
-            echo "Warning: No teachers found for subject ID $subjectId\n";
+            \Yii::info("Warning: No teachers found for subject ID $subjectId\n");
             return;
         }
 
+        $transaction = \Yii::$app->db->beginTransaction();
+        try {
+            foreach ($days as $day) {
+                foreach ($bells as $bell) {
 
-        foreach ($days as $day) {
-            foreach ($bells as $bell) {
+                    $isClassBusy = Schedules::find()
+                        ->where([
+                            'id_class' => $classId,
+                            'id_day' => $day->id_day,
+                            'id_bell' => $bell->id_bell
+                        ])
+                        ->exists();
 
-                $isClassBusy = Schedules::find()
-                    ->where([
-                        'id_class' => $classId,
-                        'id_day' => $day->id_day,
-                        'id_bell' => $bell->id_bell
-                    ])
-                    ->exists();
+                    if ($isClassBusy) {
+                        continue;
+                    }
 
-                if ($isClassBusy) {
-                    continue;
-                }
+                    $availableTeacher = $this->findAvailableTeacher($teachers, $day->id_day, $bell->id_bell);
 
-                $availableTeacher = $this->findAvailableTeacher($teachers, $day->id_day, $bell->id_bell);
+                    if ($availableTeacher) {
+                        $schedule = new Schedules();
+                        $schedule->id_day = $day->id_day;
+                        $schedule->id_bell = $bell->id_bell;
+                        $schedule->id_class = $classId;
+                        $schedule->id_subject = $subjectId;
+                        $schedule->id_teacher = $availableTeacher;
+                        $schedule->save();
 
-                if ($availableTeacher) {
-                    $schedule = new Schedules();
-                    $schedule->id_day = $day->id_day;
-                    $schedule->id_bell = $bell->id_bell;
-                    $schedule->id_class = $classId;
-                    $schedule->id_subject = $subjectId;
-                    $schedule->id_teacher = $availableTeacher;
-                    $schedule->save();
-
-                    return;
+                        return;
+                    }
                 }
             }
-        }
 
-        echo "Warning: Could not assign subject ID $subjectId for class ID $classId. No available slots found.\n";
+            $transaction->commit();
+        } catch (\Throwable $throwable) {
+            $transaction->rollBack();
+            \Yii::error($throwable->getMessage());
+        }
     }
 
     private function findAvailableTeacher(array $teacherIds, int $dayId, int $bellId): int|null
