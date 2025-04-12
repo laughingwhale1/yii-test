@@ -75,11 +75,15 @@ class ScheduleService
                         $schedule->id_teacher = $availableTeacher;
                         $schedule->save();
 
+                        $transaction->commit();
+
+                        return;
+
                     }
                 }
             }
 
-            $transaction->commit();
+
         } catch (\Throwable $throwable) {
             $transaction->rollBack();
             \Yii::error($throwable->getMessage());
