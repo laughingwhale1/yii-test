@@ -21,22 +21,38 @@ class ScheduleService
 
         $bells = Bells::find()->all();
         $classes = Classes::find()->all();
+        $totalClasses = count($classes);
+        $classCounter = 0;
 
         Schedules::deleteAll();
 
+        \Yii::info("All existing schedules deleted.");
+
+        \Yii::info("Starting schedule generation for {$totalClasses} classes...");
+
         foreach ($classes as $class) {
-            // getting class subjects
-            $classSubjects = ClassSubjects::find()
-                ->where(['id_class' => $class->id_class])
-                ->select('id_subject')
-                ->column();
+            $classCounter++;
+            \Yii::info("[$classCounter/$totalClasses] 📚 Generating schedule for class ID {$class->id_class}...");
 
-            shuffle($classSubjects);
+            // getting shuffled class subjects
+            $subjectIds = $this->getShuffledSubjectIdsForClass($class->id_class);
 
-            foreach ($classSubjects as $subjectId) {
+            foreach ($subjectIds as $subjectId) {
                 $this->assignLesson($class->id_class, $subjectId, $days, $bells);
             }
         }
+    }
+
+    private function getShuffledSubjectIdsForClass(int $classId): array
+    {
+        $subjectIds = ClassSubjects::find()
+            ->where(['id_class' => $classId])
+            ->select('id_subject')
+            ->column();
+
+        shuffle($subjectIds);
+
+        return $subjectIds;
     }
 
     private function assignLesson(int $classId, int $subjectId, $days, $bells): void
@@ -57,15 +73,7 @@ class ScheduleService
             foreach ($days as $day) {
                 foreach ($bells as $bell) {
 
-                    $isClassBusy = Schedules::find()
-                        ->where([
-                            'id_class' => $classId,
-                            'id_day' => $day->id_day,
-                            'id_bell' => $bell->id_bell
-                        ])
-                        ->exists();
-
-                    if ($isClassBusy) {
+                    if ($this->isClassBusy($classId, $day->id_day, $bell->id_bell)) {
                         continue;
                     }
 
@@ -83,11 +91,9 @@ class ScheduleService
                         $transaction->commit();
 
                         return;
-
                     }
                 }
             }
-
 
         } catch (\Throwable $throwable) {
             $transaction->rollBack();
@@ -109,5 +115,16 @@ class ScheduleService
         }
 
         return null;
+    }
+
+    private function isClassBusy(int $classId, int $dayId, int $bellId): bool
+    {
+        return Schedules::find()
+            ->where([
+                'id_class' => $classId,
+                'id_day' => $dayId,
+                'id_bell' => $bellId,
+            ])
+            ->exists();
     }
 }
