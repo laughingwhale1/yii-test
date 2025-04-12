@@ -14,6 +14,11 @@ class ScheduleService
     public function generateSchedule(): void
     {
         $days = Days::find()->all();
+
+        if (!count($days)) {
+            echo "Seed database or specify period";
+        }
+
         $bells = Bells::find()->all();
         $classes = Classes::find()->all();
 

@@ -26,11 +26,9 @@ class ScheduleGeneratorController extends Controller
 
     public function actionDraw()
     {
-        $day = Days::find()->one();
 
         $schedules = Schedules::find()
             ->with(['day', 'bell', 'class', 'subject', 'teacher'])
-            ->where(['id_day' => $day->id_day])
             ->orderBy('schedules.id_bell')
             ->all();
 
